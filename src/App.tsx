@@ -72,15 +72,10 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const [state] = useState<TransactionState>('COMPLETED');
-
-  const filteredTransactions = useMemo(() => {
-    if (transactions.length > 0) {
-      return transactions.filter((t) => t.state === state);
-    }
-
-    return [];
-  }, [state, transactions]);
+  const state: TransactionState = 'COMPLETED';
+  const filteredTransactions = transactions.filter(
+    (transaction) => transaction.state === state,
+  );
 
   useEffect(() => {
     async function fetchTransactions() {
