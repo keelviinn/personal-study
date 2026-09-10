@@ -10,8 +10,8 @@ type Transaction = {
   state: string;
 };
 
-function formatMilisecToDate(miliSec: number): string {
-  return new Date(miliSec).toLocaleString('en-GB', { timeZone: 'UTC' });
+function formatMillisecToDate(value: number): string {
+  return new Date(value).toLocaleString('en-GB', { timeZone: 'UTC' });
 }
 
 function App() {
@@ -56,9 +56,13 @@ function App() {
       <h1>Personal Study</h1>
       <p>Frontend interview preparation.</p>
 
-      {isLoading && <span>Loading transactions...</span>}
-      {!isLoading && error && <span>{error}</span>}
-      {!isLoading && !error && transactions.length > 0 ? (
+      {isLoading ? (
+        <span>Loading transactions...</span>
+      ) : !isLoading && error ? (
+        <span>{error}</span>
+      ) : !transactions.length ? (
+        <span>No transactions found!</span>
+      ) : (
         <ul>
           {transactions.map((t) => {
             return (
@@ -69,17 +73,15 @@ function App() {
                     {Intl.NumberFormat('en-GB', {
                       style: 'currency',
                       currency: t.currency,
-                    }).format(Number(t.amount))}
+                    }).format(t.amount)}
                   </p>
-                  <p>{formatMilisecToDate(t.createdDate)}</p>
+                  <p>{formatMillisecToDate(t.createdDate)}</p>
                   <p>{t.state}</p>
                 </div>
               </li>
             );
           })}
         </ul>
-      ) : (
-        <span>No transactions found!</span>
       )}
     </div>
   );
