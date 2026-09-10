@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 
 type TransactionState = 'COMPLETED' | 'PENDING' | 'FAILED';
@@ -72,6 +72,11 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const state: TransactionState = 'COMPLETED';
+  const filteredTransactions = transactions.filter(
+    (transaction) => transaction.state === state,
+  );
+
   useEffect(() => {
     async function fetchTransactions() {
       try {
@@ -114,11 +119,11 @@ function App() {
         <span>Loading transactions...</span>
       ) : !isLoading && error ? (
         <span>{error}</span>
-      ) : !transactions.length ? (
+      ) : !filteredTransactions.length ? (
         <span>No transactions found!</span>
       ) : (
         <ul>
-          {transactions.map((t) => {
+          {filteredTransactions.map((t) => {
             return (
               <li key={t.id}>
                 <div>
