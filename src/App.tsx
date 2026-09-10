@@ -10,12 +10,14 @@ type Transaction = {
   state: string;
 };
 
-function formatSecToDate(sec: number): string {
-  return new Date(sec).toLocaleString('en-GB', { timeZone: 'UTC' });
+function formatMilisecToDate(miliSec: number): string {
+  return new Date(miliSec).toLocaleString('en-GB', { timeZone: 'UTC' });
 }
 
 function App() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function fetchTransactions() {
@@ -26,17 +28,23 @@ function App() {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              'x-access-token': 'token-here',
             },
           },
         );
 
         if (!res.ok) {
           console.log('error loading transactions');
+          setError(`error loading transactions: ${res.status}`);
+          return;
         }
 
         setTransactions(await res.json());
       } catch (error) {
         console.log('Network error');
+        setError(`Network error`);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -48,7 +56,9 @@ function App() {
       <h1>Personal Study</h1>
       <p>Frontend interview preparation.</p>
 
-      {transactions.length > 0 ? (
+      {isLoading && <span>Loading transactions...</span>}
+      {!isLoading && error && <span>{error}</span>}
+      {!isLoading && !error && transactions.length > 0 ? (
         <ul>
           {transactions.map((t) => {
             return (
@@ -61,7 +71,7 @@ function App() {
                       currency: t.currency,
                     }).format(Number(t.amount))}
                   </p>
-                  <p>{formatSecToDate(t.createdDate)}</p>
+                  <p>{formatMilisecToDate(t.createdDate)}</p>
                   <p>{t.state}</p>
                 </div>
               </li>
