@@ -1,14 +1,67 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
+type TransactionState = 'COMPLETED' | 'PENDING' | 'FAILED';
+
 type Transaction = {
   id: string;
-  amount: number;
+  amount: string;
   createdDate: number;
   currency: string;
   description: string;
-  state: string;
+  state: TransactionState;
 };
+
+const mockTransactions: Transaction[] = [
+  {
+    id: '1',
+    amount: '125.50',
+    createdDate: 1757509200000,
+    currency: 'EUR',
+    description: 'Grocery shopping',
+    state: 'COMPLETED',
+  },
+  {
+    id: '2',
+    amount: '850.00',
+    createdDate: 1757422800000,
+    currency: 'EUR',
+    description: 'Monthly salary',
+    state: 'COMPLETED',
+  },
+  {
+    id: '3',
+    amount: '45.99',
+    createdDate: 1757336400000,
+    currency: 'USD',
+    description: 'Online subscription',
+    state: 'PENDING',
+  },
+  {
+    id: '4',
+    amount: '1200.00',
+    createdDate: 1757246400000,
+    currency: 'EUR',
+    description: 'Rent payment',
+    state: 'COMPLETED',
+  },
+  {
+    id: '5',
+    amount: '75.20',
+    createdDate: 1757160000000,
+    currency: 'GBP',
+    description: 'Restaurant',
+    state: 'FAILED',
+  },
+  {
+    id: '6',
+    amount: '300.00',
+    createdDate: 1757073600000,
+    currency: 'EUR',
+    description: 'Transfer to savings',
+    state: 'PENDING',
+  },
+];
 
 function formatMillisecToDate(value: number): string {
   return new Date(value).toLocaleString('en-GB', { timeZone: 'UTC' });
@@ -33,13 +86,14 @@ function App() {
           },
         );
 
-        if (!res.ok) {
+        if (!res.ok && !mockTransactions) {
           console.log('error loading transactions');
           setError(`error loading transactions: ${res.status}`);
           return;
         }
 
-        setTransactions(await res.json());
+        setTransactions(mockTransactions);
+        // setTransactions(await res.json());
       } catch (error) {
         console.log('Network error');
         setError(`Network error`);
@@ -73,7 +127,7 @@ function App() {
                     {Intl.NumberFormat('en-GB', {
                       style: 'currency',
                       currency: t.currency,
-                    }).format(t.amount)}
+                    }).format(Number(t.amount))}
                   </p>
                   <p>{formatMillisecToDate(t.createdDate)}</p>
                   <p>{t.state}</p>
