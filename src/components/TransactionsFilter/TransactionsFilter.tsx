@@ -1,4 +1,3 @@
-import { type ChangeEvent } from 'react';
 import type { TransactionState } from '../../types';
 
 const TRANSACTION_STATES: TransactionState[] = [
@@ -16,14 +15,9 @@ export function TransactionsFilter({
   state,
   onChangeState,
 }: TransactionsFilterProps) {
-  function handleStateSelect(event: ChangeEvent<HTMLInputElement>) {
-    const value = event.target.value as TransactionState;
-    onChangeState(value);
-  }
-
   return (
     <form>
-      <p>Select your favorite state:</p>
+      <legend>Select transaction state</legend>
 
       {TRANSACTION_STATES.map((transactionState) => (
         <label key={transactionState}>
@@ -32,7 +26,7 @@ export function TransactionsFilter({
             name="state"
             value={transactionState}
             checked={state === transactionState}
-            onChange={handleStateSelect}
+            onChange={() => onChangeState(transactionState)}
           />
           {transactionState}
         </label>
