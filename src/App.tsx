@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
+import { Transactions } from './components/Transactions/Transactions';
+
 import './App.css';
 
 type TransactionState = 'COMPLETED' | 'PENDING' | 'FAILED';
@@ -63,6 +65,12 @@ const mockTransactions: Transaction[] = [
   },
 ];
 
+const TRANSACTION_STATES: TransactionState[] = [
+  'COMPLETED',
+  'PENDING',
+  'FAILED',
+];
+
 function formatMillisecToDate(value: number): string {
   return new Date(value).toLocaleString('en-GB', { timeZone: 'UTC' });
 }
@@ -72,76 +80,59 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const state: TransactionState = 'COMPLETED';
+  const [state, setState] = useState<TransactionState>('COMPLETED');
   const filteredTransactions = transactions.filter(
     (transaction) => transaction.state === state,
   );
 
-  useEffect(() => {
-    async function fetchTransactions() {
-      try {
-        const res = await fetch(
-          'https://interview-mock-bank.revolut.com/api/transactions',
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-access-token': 'token-here',
-            },
+  async function fetchTransactions() {
+    try {
+      const res = await fetch(
+        'https://interview-mock-bank.revolut.com/api/transactions',
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': 'token-here',
           },
-        );
+        },
+      );
 
-        if (!res.ok && !mockTransactions) {
-          console.log('error loading transactions');
-          setError(`error loading transactions: ${res.status}`);
-          return;
-        }
-
-        setTransactions(mockTransactions);
-        // setTransactions(await res.json());
-      } catch (error) {
-        console.log('Network error');
-        setError(`Network error`);
-      } finally {
-        setIsLoading(false);
+      if (!res.ok && !mockTransactions) {
+        console.log('error loading transactions');
+        setError(`error loading transactions: ${res.status}`);
+        return;
       }
-    }
 
+      setTransactions(mockTransactions);
+      // setTransactions(await res.json());
+    } catch (error) {
+      console.log('Network error');
+      setError(`Network error`);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
     fetchTransactions();
   }, []);
+
+  function handleStateSelect(event: ChangeEvent<HTMLInputElement>) {
+    if (!event) {
+      return;
+    }
+
+    const value = event.target.value as TransactionState;
+    setState(value);
+  }
 
   return (
     <div className="app">
       <h1>Personal Study</h1>
       <p>Frontend interview preparation.</p>
 
-      {isLoading ? (
-        <span>Loading transactions...</span>
-      ) : !isLoading && error ? (
-        <span>{error}</span>
-      ) : !filteredTransactions.length ? (
-        <span>No transactions found!</span>
-      ) : (
-        <ul>
-          {filteredTransactions.map((t) => {
-            return (
-              <li key={t.id}>
-                <div>
-                  <p>{t.description}</p>
-                  <p>
-                    {Intl.NumberFormat('en-GB', {
-                      style: 'currency',
-                      currency: t.currency,
-                    }).format(Number(t.amount))}
-                  </p>
-                  <p>{formatMillisecToDate(t.createdDate)}</p>
-                  <p>{t.state}</p>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <Transactions />
     </div>
   );
 }
