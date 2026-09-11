@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Transaction } from "../types";
 import { getTransactions } from "../api/transactions";
-import { mockTransactions } from "../mock/transactions";
 
 export function useFetchTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -10,13 +9,10 @@ export function useFetchTransactions() {
 
   async function fetchTransactions() {
     try {
-      // const res = await getTransactions()
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setTransactions(mockTransactions);
-      // setTransactions(await res);
+      const transactions = await getTransactions()
+      setTransactions(transactions);
     } catch (error) {
-      console.log('Network error');
-      setError(`Network error`);
+      setError('Failed to fetch transactions');
     } finally {
       setIsLoading(false);
     }
