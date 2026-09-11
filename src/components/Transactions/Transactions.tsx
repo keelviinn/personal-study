@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useFetchTransactions } from '../../hooks/useFetchTransactions';
 import type { TransactionState } from '../../types';
-import { TransactionsFilter } from '../TransactionsFilter/TransactionFilter';
+import { TransactionsFilter } from '../TransactionsFilter/TransactionsFilter';
 
 function formatMillisecToDate(value: number): string {
   return new Date(value).toLocaleString('en-GB', { timeZone: 'UTC' });

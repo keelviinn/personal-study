@@ -7,7 +7,7 @@ const TRANSACTION_STATES: TransactionState[] = [
   'FAILED',
 ];
 
-interface TransactionsFilter {
+interface TransactionsFilterProps {
   state: TransactionState;
   onChangeState: (value: TransactionState) => void;
 }
@@ -15,12 +15,8 @@ interface TransactionsFilter {
 export function TransactionsFilter({
   state,
   onChangeState,
-}: TransactionsFilter) {
+}: TransactionsFilterProps) {
   function handleStateSelect(event: ChangeEvent<HTMLInputElement>) {
-    if (!event) {
-      return;
-    }
-
     const value = event.target.value as TransactionState;
     onChangeState(value);
   }
